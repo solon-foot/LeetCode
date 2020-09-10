@@ -32,6 +32,7 @@ public class L46 {
         TLog.e(solution.permute(new int[]{1,4}));
         TLog.e(solution.permute(new int[]{1}));
         TLog.e(solution.permute(new int[]{}));
+        TLog.e(solution.permute(new int[]{1,2,3,4}));
         assertEquals(true, true);
     }
 

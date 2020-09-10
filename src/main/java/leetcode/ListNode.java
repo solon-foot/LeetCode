@@ -19,6 +19,19 @@ public class ListNode implements Cloneable {
         }
         return head;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ListNode))return false;
+        ListNode n = (ListNode) obj;
+        ListNode cursor = this;
+        while (cursor!=null && n!=null && cursor.val == n.val){
+                cursor = cursor.next;
+                n = n.next;
+        }
+        return cursor==null && n==null;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
