@@ -1,12 +1,24 @@
 package test;
 
+import com.sun.org.apache.xml.internal.resolver.readers.SAXParserHandler;
 import leetcode.ListNode;
 import leetcode.TLog;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
+import javax.swing.text.rtf.RTFEditorKit;
+import javax.xml.parsers.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -19,78 +31,74 @@ public class LMN {
     }
 
     @Test
-    public void test() {
-        Solution solution = new Solution1();
-        Solution solution2 = new Solution2();
-        assertEquals(2, solution.find(3, 4));
-        assertEquals(3, solution.find(3, 1));
-        assertEquals(3, solution.find(3, 2));//3
-        assertEquals(1, solution.find(3, 5));//1
-        for (int i = 1; i < 100; i++) {
-            for (int j = 1; j < 100; j++) {
-//                TLog.e(i, j, solution.find(i, j));
-                assertEquals(solution.find(i,j),solution2.find(i,j));
+    public void test() throws ParserConfigurationException, SAXException, IOException {
+        Set<String> set = new HashSet<>();
+        NodeList enNode = read("C:\\Users\\zack\\Desktop\\string\\en/strings.xml");
+        for (int i = 0; i < enNode.getLength(); i++) {
+            Node node = enNode.item(i);
+            set.add(node.getAttributes().getNamedItem("name").getNodeValue());
+        }
+        enNode = null;
+        NodeList zhNode = read("C:\\Users\\zack\\Desktop\\string\\zh/strings.xml");
+        for (int i = 0; i < zhNode.getLength(); i++) {
+            Node node = zhNode.item(i);
+            set.remove(node.getAttributes().getNamedItem("name").getNodeValue());
+        }
+        zhNode = null;
+//
+        NodeList zhOldNode = read("C:\\Users\\zack\\Desktop\\string\\zh-old/strings.xml");
+        System.out.println(set);
+        MNL array = new MNL();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < zhOldNode.getLength(); i++) {
+            Node node = zhOldNode.item(i);
+
+            if (set.contains(node.getAttributes().getNamedItem("name").getNodeValue())){
+                array.add(node);
+                toNodeString(sb,node);
+
             }
         }
+        System.out.println(sb);
 
-//        System.out.println(Integer.parseInt("0x12"));
-        try {
-            System.out.println(InetAddress.getByName("192.168.0.012").getHostAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+
     }
+    static void toNodeString(StringBuilder sb,Node node){
+        sb.append('<').append(node.getNodeName()).append(' ');
+        NamedNodeMap attributes = node.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node item = attributes.item(i);
+            sb.append(item.getNodeName()).append('=').append('"').append(item.getTextContent()).append('"').append(' ');
+        }
+        if (node.getTextContent()==null){
+            sb.append("/>").append('\n');
+            return;
+        }
+        sb.append('>').append(node.getTextContent());
+        sb.append("</").append(node.getNodeName()).append('>').append('\n');
+    }
+    static class MNL implements NodeList {
+        List<Node> data = new ArrayList<>();
 
-    private static class Solution1 implements Solution {
-        public boolean validateIPv4(String IP) {
-            String[] nums = IP.split("\\.", -1);
-            if (nums.length!=4)return false;
-            for (String x : nums) {
-                // Validate integer in range (0, 255):
-                // 1. length of chunk is between 1 and 3
-                if (x.length() == 0 || x.length() > 3) return false;
-                // 2. no extra leading zeros
-                if (x.charAt(0) == '0' && x.length() != 1) return false;
-                // 3. only digits are allowed
-                for (char ch : x.toCharArray()) {
-                    if (! Character.isDigit(ch)) return false;
-                }
-                // 4. less than 255
-                if (Integer.parseInt(x) > 255) return false;
-            }
-            return true;
+        public void add(Node node){
+            data.add(node);
+        }
+        @Override
+        public Node item(int index) {
+            return data.get(index);
         }
 
         @Override
-        public int find(int n, int m) {
-            if (m == 1) return n;
-            ListNode head = new ListNode(1);
-            ListNode cursor = head;
-            for (int i = 1; i < n; i++) {
-                cursor = cursor.next = new ListNode(i + 1);
-            }
-            cursor.next = head;
-            cursor = head;
-            while (cursor.next != cursor) {
-                for (int i = 1; i < m - 1; i++) {
-                    cursor = cursor.next;
-                }
-                cursor = cursor.next = cursor.next.next;
-            }
-            return cursor.val;
+        public int getLength() {
+            return data.size();
         }
     }
+    NodeList read(String path) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
 
-    private static class Solution2 implements Solution {
-
-        @Override
-        public int find(int n, int m) {
-            int s = 0;
-
-            for (int i = 2; i <= n; ++i) {
-                s = (s + m) % i;
-            }
-            return s + 1;
-        }
+        Document d = builder.parse(path);
+        return  d.getElementsByTagName("string");
     }
+
 }

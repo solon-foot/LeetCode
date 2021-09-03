@@ -1,5 +1,7 @@
 package leetcode;
 
+import java.util.HashSet;
+
 public class ListNode implements Cloneable {
     public int val;
     public ListNode next;
@@ -11,6 +13,7 @@ public class ListNode implements Cloneable {
     }
 
     public static ListNode create(int... list) {
+        if (list.length==0)return null;
         ListNode head = new ListNode(list[0]);
         ListNode temp = head;
         for (int i = 1; i < list.length; i++) {
@@ -37,7 +40,12 @@ public class ListNode implements Cloneable {
         StringBuilder sb = new StringBuilder();
         sb.append(val);
         ListNode l = next;
+        HashSet<ListNode> set = new HashSet<>();
         while (l != null) {
+            if (set.contains(l)) {
+                sb.append("->XXXX->").append(l.val);
+                break;
+            }
             sb.append("->").append(l.val);
             l = l.next;
         }

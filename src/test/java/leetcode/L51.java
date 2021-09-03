@@ -40,7 +40,7 @@ public class L51 {
                 Arrays.fill(flag[i], -1);
             }
 
-            ans = new ArrayList<>();
+                ans = new ArrayList<>();
             _solveNQueens(0);
 
             return ans;

@@ -28,14 +28,42 @@ public class L22 {
     @Test
     public void test() {
         Solution solution = new Solution();
-        assertEquals(true, true);
+        assertEquals(true, solution.generateParenthesis(3));
     }
 
     private static class Solution {
+        List<String> res = new ArrayList<>();
         public List<String> generateParenthesis(int n) {
+            if(n <= 0){
+                return res;
+            }
+            getParenthesis(new StringBuilder(),n,n);
+            return res;
+        }
 
-            List<String> strings = new ArrayList<>();
-            return strings;
+        private void getParenthesis(StringBuilder str,int left, int right) {
+            if(left == 0 && right == 0 ){
+                res.add(str.toString());
+                return;
+            }
+            int len = str.length();
+            if(left == right){
+                //剩余左右括号数相等，下一个只能用左括号
+                str.append('(');
+                getParenthesis(str,left-1,right);
+                str.setLength(len);
+
+            }else if(left < right){
+                //剩余左括号小于右括号，下一个可以用左括号也可以用右括号
+                if(left > 0){
+                    str.append('(');
+                    getParenthesis(str,left-1,right);
+                    str.setLength(len);
+                }
+                str.append(')');
+                getParenthesis(str,left,right-1);
+                str.setLength(len);
+            }
         }
     }
 }

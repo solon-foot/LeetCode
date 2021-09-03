@@ -11,25 +11,80 @@ public class TreeNode implements Cloneable {
         val = x;
     }
 
+    public TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TreeNode))return false;
+        return equals(this, (TreeNode) obj);
+    }
+    public boolean equals(TreeNode t1,TreeNode t2) {
+        if (t1==null && t2 == null)return true;
+        if (t1==null || t2 == null||t1.val!=t2.val)return false;
+        return equals(t1.left,t2.left)&&equals(t1.right,t2.right);
+    }
+
+    public List<Integer> postorderTraversal() {
+        List<Integer> ans = new ArrayList<>();
+        new Object(){
+            void postorderTraversal(TreeNode root) {
+                if (root == null)return;
+                postorderTraversal(root.left);
+                postorderTraversal(root.right);
+                ans.add(root.val);
+            }
+        }.postorderTraversal(this);
+        return ans;
+    }
+    public List<Integer> preorderTraversal() {
+        List<Integer> ans = new ArrayList<>();
+        new Object(){
+            void postorderTraversal(TreeNode root) {
+                if (root == null)return;
+                ans.add(root.val);
+                postorderTraversal(root.left);
+                postorderTraversal(root.right);
+            }
+        }.postorderTraversal(this);
+        return ans;
+    }
+    public List<Integer> midorderTraversal() {
+        List<Integer> ans = new ArrayList<>();
+        new Object(){
+            void postorderTraversal(TreeNode root) {
+                if (root == null)return;
+                postorderTraversal(root.left);
+                ans.add(root.val);
+                postorderTraversal(root.right);
+            }
+        }.postorderTraversal(this);
+        return ans;
+    }
 
     @Override
     public String toString() {
-        String output = "";
+        StringBuilder output = new StringBuilder();
+        output.append('[');
         Queue<TreeNode> nodeQueue = new LinkedList<>();
         nodeQueue.add(this);
         while (!nodeQueue.isEmpty()) {
             TreeNode node = nodeQueue.remove();
 
             if (node == null) {
-                output += "null, ";
+                output.append("null").append(',');
                 continue;
             }
-
-            output += String.valueOf(node.val) + ", ";
+            output.append(node.val).append(',');
             nodeQueue.add(node.left);
             nodeQueue.add(node.right);
         }
-        return "[" + output.substring(0, output.length() - 2) + "]";
+        output.setLength(output.length()  -1  );
+        output.append(']');
+        return output.toString();
     }
     public static TreeNode create(String input) {
         input = input.trim();
